@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Verify Your IdeaVerse Account</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .content {
+            background-color: #f9f9f9;
+            padding: 30px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .button {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #009688;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+        }
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Welcome to IdeaVerse!</h1>
+    </div>
+    
+    <div class="content">
+        <p>Hi {{ user.username }},</p>
+        
+        <p>Thank you for creating an account with IdeaVerse. To complete your registration and start using our platform, please verify your email address by clicking the button below:</p>
+        
+        <p style="text-align: center;">
+            <a href="{{ verification_url }}" class="button">Verify Email Address</a>
+        </p>
+        
+        <p>If the button doesn't work, you can also copy and paste this link into your browser:</p>
+        <p>{{ verification_url }}</p>
+        
+        <p>This link will expire in 24 hours for security reasons.</p>
+    </div>
+    
+    <div class="footer">
+        <p>This email was sent by IdeaVerse. If you didn't create an account, you can safely ignore this email.</p>
+        <p>&copy; {% now "Y" %} IdeaVerse. All rights reserved.</p>
+    </div>
+</body>
+</html> 
