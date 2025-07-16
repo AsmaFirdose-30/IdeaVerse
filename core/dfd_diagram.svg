@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="1000" height="800" xmlns="http://www.w3.org/2000/svg">
+    <!-- Title -->
+    <text x="500" y="50" font-family="Arial" font-size="24" text-anchor="middle" font-weight="bold">Data Flow Diagram for IdeaVerse</text>
+    
+    <!-- External Entities -->
+    <!-- User -->
+    <rect x="50" y="100" width="150" height="80" fill="#ffffff" stroke="#333" stroke-width="2" rx="10"/>
+    <text x="125" y="140" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">User</text>
+    
+    <!-- Database -->
+    <rect x="750" y="100" width="150" height="80" fill="#ffffff" stroke="#333" stroke-width="2" rx="10"/>
+    <text x="825" y="140" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Database</text>
+    
+    <!-- Processes -->
+    <!-- Authentication -->
+    <ellipse cx="250" cy="140" rx="80" ry="40" fill="#ffffff" stroke="#333" stroke-width="2"/>
+    <text x="250" y="145" font-family="Arial" font-size="14" text-anchor="middle">Authentication</text>
+    
+    <!-- Board Management -->
+    <ellipse cx="450" cy="140" rx="80" ry="40" fill="#ffffff" stroke="#333" stroke-width="2"/>
+    <text x="450" y="145" font-family="Arial" font-size="14" text-anchor="middle">Board</text>
+    <text x="450" y="160" font-family="Arial" font-size="12" text-anchor="middle">Management</text>
+    
+    <!-- Content Management -->
+    <ellipse cx="250" cy="300" rx="80" ry="40" fill="#ffffff" stroke="#333" stroke-width="2"/>
+    <text x="250" y="305" font-family="Arial" font-size="14" text-anchor="middle">Content</text>
+    <text x="250" y="320" font-family="Arial" font-size="12" text-anchor="middle">Management</text>
+    
+    <!-- Collaboration -->
+    <ellipse cx="450" cy="300" rx="80" ry="40" fill="#ffffff" stroke="#333" stroke-width="2"/>
+    <text x="450" y="305" font-family="Arial" font-size="14" text-anchor="middle">Collaboration</text>
+    
+    <!-- Data Stores -->
+    <!-- User Data -->
+    <rect x="50" y="400" width="150" height="80" fill="#ffffff" stroke="#333" stroke-width="2" rx="10"/>
+    <text x="125" y="440" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">User Data</text>
+    
+    <!-- Board Data -->
+    <rect x="250" y="400" width="150" height="80" fill="#ffffff" stroke="#333" stroke-width="2" rx="10"/>
+    <text x="325" y="440" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Board Data</text>
+    
+    <!-- Content Data -->
+    <rect x="450" y="400" width="150" height="80" fill="#ffffff" stroke="#333" stroke-width="2" rx="10"/>
+    <text x="525" y="440" font-family="Arial" font-size="16" text-anchor="middle" font-weight="bold">Content Data</text>
+    
+    <!-- Data Flows -->
+    <!-- User to Authentication -->
+    <path d="M 200,140 L 170,140" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    <text x="185" y="130" font-family="Arial" font-size="12" text-anchor="middle">Login Data</text>
+    
+    <!-- Authentication to Board Management -->
+    <path d="M 330,140 L 370,140" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    <text x="350" y="130" font-family="Arial" font-size="12" text-anchor="middle">Auth Token</text>
+    
+    <!-- Board Management to Database -->
+    <path d="M 530,140 L 750,140" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    <text x="640" y="130" font-family="Arial" font-size="12" text-anchor="middle">Board Data</text>
+    
+    <!-- Board Management to Content Management -->
+    <path d="M 450,180 L 450,260" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    <text x="470" y="220" font-family="Arial" font-size="12" text-anchor="middle">Content Requests</text>
+    
+    <!-- Content Management to Database -->
+    <path d="M 330,300 L 750,180" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    <text x="540" y="240" font-family="Arial" font-size="12" text-anchor="middle">Content Data</text>
+    
+    <!-- Collaboration to Database -->
+    <path d="M 530,300 L 750,220" stroke="#333" stroke-width="2" fill="none" marker-end="url(#arrowhead)"/>
+    <text x="640" y="260" font-family="Arial" font-size="12" text-anchor="middle">Collaboration Data</text>
+    
+    <!-- Arrow Definition -->
+    <defs>
+        <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+            <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+        </marker>
+    </defs>
+    
+    <!-- Legend -->
+    <rect x="50" y="600" width="900" height="150" fill="#ffffff" stroke="#333" stroke-width="1" rx="5"/>
+    <text x="500" y="620" font-family="Arial" font-size="14" text-anchor="middle" font-weight="bold">Legend</text>
+    <text x="500" y="650" font-family="Arial" font-size="12" text-anchor="middle">Rectangle: External Entity/Data Store | Ellipse: Process</text>
+    <text x="500" y="670" font-family="Arial" font-size="12" text-anchor="middle">Arrow: Data Flow | Text: Data Description</text>
+</svg> 

@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+{% block title %}Analytics Dashboard - IdeaVerse{% endblock %}
+{% block extra_head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+.analytics-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem 1rem;
+}
+.analytics-title {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+.analytics-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+    justify-content: center;
+}
+.analytics-card {
+    background: var(--card-bg);
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px var(--shadow-color);
+    padding: 2rem 1.5rem;
+    flex: 1 1 350px;
+    min-width: 320px;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.analytics-card h5 {
+    font-size: 1.2rem;
+    margin-bottom: 1.2rem;
+    color: #009688;
+    font-weight: 600;
+}
+.analytics-metric {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #4a00e0;
+    margin-bottom: 0.5rem;
+}
+.analytics-engagement {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+.chart-canvas {
+    width: 100% !important;
+    max-width: 400px;
+    height: 300px !important;
+    margin: 0 auto;
+}
+.no-chart-data {
+    color: #b0bec5;
+    font-size: 1.1rem;
+    margin-top: 2rem;
+    text-align: center;
+}
+@media (max-width: 900px) {
+    .analytics-row {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+    .analytics-card {
+        max-width: 100%;
+    }
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="analytics-container">
+    <div class="analytics-title">Your Content Analytics</div>
+    <div class="analytics-row">
+        <div class="analytics-card">
+            <h5>Total Uploads</h5>
+            <div class="analytics-metric">{{ total_uploads }}</div>
+        </div>
+        <div class="analytics-card">
+            <h5>Engagement</h5>
+            <div class="analytics-engagement">Total Likes: <b>{{ total_likes }}</b></div>
+            <div class="analytics-engagement">Total Comments: <b>{{ total_comments }}</b></div>
+            <div class="analytics-engagement">Total Views: <b>{{ total_views }}</b></div>
+        </div>
+    </div>
+    <div class="analytics-row">
+        <div class="analytics-card">
+            <h5>Uploads by Type</h5>
+            <canvas id="typeChart" class="chart-canvas"></canvas>
+            <div id="typeNoData" class="no-chart-data" style="display:none;">No uploads by type yet.</div>
+        </div>
+        <div class="analytics-card">
+            <h5>Uploads Over Time</h5>
+            <canvas id="trendChart" class="chart-canvas"></canvas>
+            <div id="trendNoData" class="no-chart-data" style="display:none;">No upload activity yet.</div>
+        </div>
+    </div>
+    <div class="analytics-row">
+        <div class="analytics-card" style="width:100%">
+            <h5>Most Popular Content (by Likes)</h5>
+            <canvas id="popularChart" class="chart-canvas"></canvas>
+            <div id="popularNoData" class="no-chart-data" style="display:none;">No popular content yet.</div>
+        </div>
+    </div>
+</div>
+
+{{ uploads_by_type|json_script:"uploadsByType" }}
+{{ uploads_over_time|json_script:"uploadsOverTime" }}
+{{ popular_content|json_script:"popularContent" }}
+
+<script>
+const uploadsByType = JSON.parse(document.getElementById('uploadsByType').textContent);
+const uploadsOverTime = JSON.parse(document.getElementById('uploadsOverTime').textContent);
+const popularContent = JSON.parse(document.getElementById('popularContent').textContent);
+// Pie Chart: Uploads by Type
+const typeLabels = uploadsByType.map(x => x.content_type || 'Unknown');
+const typeData = uploadsByType.map(x => x.count);
+if (typeData.length > 0 && typeData.reduce((a, b) => a + b, 0) > 0) {
+    new Chart(document.getElementById('typeChart'), {
+        type: 'pie',
+        data: {
+            labels: typeLabels,
+            datasets: [{
+                data: typeData,
+                backgroundColor: ['#009688', '#74ebd5', '#ACB6E5', '#ffb347', '#e57373'],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { position: 'bottom' } },
+            animation: { animateScale: true }
+        }
+    });
+} else {
+    document.getElementById('typeChart').style.display = 'none';
+    document.getElementById('typeNoData').style.display = 'block';
+}
+// Line Chart: Uploads Over Time
+const trendLabels = uploadsOverTime.map(x => {
+    const d = new Date(x.month);
+    return d.toLocaleString('default', { month: 'short', year: 'numeric' });
+});
+const trendData = uploadsOverTime.map(x => x.count);
+if (trendData.length > 0 && trendData.reduce((a, b) => a + b, 0) > 0) {
+    new Chart(document.getElementById('trendChart'), {
+        type: 'line',
+        data: {
+            labels: trendLabels,
+            datasets: [{
+                label: 'Uploads',
+                data: trendData,
+                fill: true,
+                borderColor: '#009688',
+                backgroundColor: 'rgba(0,150,136,0.1)',
+                tension: 0.3,
+                pointRadius: 5,
+                pointHoverRadius: 8
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            animation: { duration: 1200, easing: 'easeInOutQuart' }
+        }
+    });
+} else {
+    document.getElementById('trendChart').style.display = 'none';
+    document.getElementById('trendNoData').style.display = 'block';
+}
+// Bar Chart: Most Popular Content
+const popLabels = popularContent.map(x => x.title);
+const popData = popularContent.map(x => x.like_count);
+if (popData.length > 0 && popData.reduce((a, b) => a + b, 0) > 0) {
+    new Chart(document.getElementById('popularChart'), {
+        type: 'bar',
+        data: {
+            labels: popLabels,
+            datasets: [{
+                label: 'Likes',
+                data: popData,
+                backgroundColor: '#74ebd5',
+                borderRadius: 8,
+                barPercentage: 0.7
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: false } },
+            animation: { duration: 1200, easing: 'easeInOutQuart' },
+            scales: {
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, grid: { color: '#eee' } }
+            }
+        }
+    });
+} else {
+    document.getElementById('popularChart').style.display = 'none';
+    document.getElementById('popularNoData').style.display = 'block';
+}
+</script>
+{% endblock %} 
