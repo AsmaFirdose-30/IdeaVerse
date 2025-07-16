@@ -1,0 +1,23 @@
+This line to be added before activating the env: 
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
+
+Command to activate virtual environment : 
+.\venv\Scripts\activate
+
+Command to run server : 
+python manage.py runserver
+
+Our Server URL : 
+http://127.0.0.1:8000/
+
+
+Admin panel:
+username: assu
+password: asma@0530
+http://127.0.0.1:8000/admin/
+
+My account in IdeaVerse : 
+username : Asma0530
+password : Assu2001
+
+
