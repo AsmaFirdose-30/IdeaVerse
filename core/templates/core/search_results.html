@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form method="GET" action="{% url 'search' %}" class="d-flex">
+                        <input type="text" name="q" class="form-control me-2" placeholder="Search users, boards, content..." value="{{ query }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-search"></i> Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% if query %}
+                <h4 class="mb-4">Search Results for "{{ query }}"</h4>
+
+                {% if users %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Users</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for user in users %}
+                                    <a href="{% url 'user_profile' user.username %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex align-items-center">
+                                            {% if user.profile.avatar %}
+                                                <img src="{{ user.profile.avatar.url }}" class="rounded-circle me-3" width="40" height="40" alt="{{ user.username }}">
+                                            {% else %}
+                                                <div class="rounded-circle bg-secondary me-3" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                                                    <i class="fas fa-user text-white"></i>
+                                                </div>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-0">{{ user.get_full_name|default:user.username }}</h6>
+                                                <small class="text-muted">@{{ user.username }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if public_boards %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Public Boards</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for board in public_boards %}
+                                    <a href="{% url 'board_detail' board.id %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">{{ board.title }}</h6>
+                                                <small class="text-muted">by {{ board.user.username }}</small>
+                                            </div>
+                                            <span class="badge bg-primary">
+                                                {{ board.file_contents.count }} files
+                                            </span>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if public_content %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Public Content</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for content in public_content %}
+                                    <a href="{% url 'content_detail' content.id %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">{{ content.title|default:content.file.name }}</h6>
+                                                <small class="text-muted">in {{ content.board.title }} by {{ content.user.username }}</small>
+                                            </div>
+                                            <div class="text-end">
+                                                <span class="badge bg-secondary me-2">
+                                                    <i class="fas fa-eye"></i> {{ content.views }}
+                                                </span>
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-heart"></i> {{ content.likes.count }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if public_notes %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5>Public Notes</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="list-group">
+                                {% for note in public_notes %}
+                                    <a href="{% url 'board_detail' note.board.id %}" class="list-group-item list-group-item-action">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="mb-0">{{ note.title }}</h6>
+                                                <small class="text-muted">in {{ note.board.title }} by {{ note.board.user.username }}</small>
+                                            </div>
+                                            <small class="text-muted">{{ note.created_at|date:"M d, Y" }}</small>
+                                        </div>
+                                    </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                {% if not users and not public_boards and not public_content and not public_notes %}
+                    <div class="alert alert-info">
+                        No results found for "{{ query }}"
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

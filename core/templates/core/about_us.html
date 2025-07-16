@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% block title %}About Us - IdeaVerse{% endblock %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+.about-container {
+    max-width: 800px;
+    margin: 2.5rem auto;
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border-radius: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    padding: 2.5rem 2rem;
+    text-align: center;
+}
+.about-title {
+    font-size: 2.3rem;
+    font-weight: 700;
+    color: #4a00e0;
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.7rem;
+}
+.about-icons {
+    font-size: 2.2rem;
+    color: #009688;
+    margin-bottom: 1.2rem;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+}
+.about-description {
+    font-size: 1.15rem;
+    color: #333;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+}
+.about-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+.feature-card {
+    background: #fff;
+    border-radius: 1.2rem;
+    box-shadow: 0 2px 8px rgba(0,150,136,0.08);
+    padding: 1.5rem 1.2rem;
+    min-width: 220px;
+    max-width: 270px;
+    flex: 1 1 220px;
+    text-align: center;
+    transition: transform 0.2s;
+}
+.feature-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 24px rgba(0,150,136,0.13);
+}
+.feature-icon {
+    font-size: 2.1rem;
+    color: #6a11cb;
+    margin-bottom: 0.7rem;
+}
+.feature-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #009688;
+    margin-bottom: 0.5rem;
+}
+.feature-desc {
+    color: #444;
+    font-size: 1rem;
+}
+@media (max-width: 700px) {
+    .about-container { padding: 1.2rem 0.5rem; }
+    .about-features { flex-direction: column; gap: 1.2rem; }
+}
+</style>
+{% endblock %}
+{% block content %}
+<div class="about-container">
+    <div class="about-title">
+        <i class="fa-solid fa-lightbulb"></i> About IdeaVerse
+    </div>
+    <div class="about-icons">
+        <i class="fa-solid fa-users"></i>
+        <i class="fa-solid fa-brain"></i>
+        <i class="fa-solid fa-share-nodes"></i>
+        <i class="fa-solid fa-chart-line"></i>
+    </div>
+    <div class="about-description">
+        <strong>IdeaVerse</strong> is your creative hub for organizing, sharing, and collaborating on ideas, notes, and content.<br>
+        Whether you're a student, professional, or enthusiast, our platform empowers you to:
+    </div>
+    <div class="about-features">
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-folder-plus"></i></div>
+            <div class="feature-title">Create Boards</div>
+            <div class="feature-desc">Organize your ideas and files into boards for easy access and management.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-users"></i></div>
+            <div class="feature-title">Collaborate</div>
+            <div class="feature-desc">Invite others to your boards, work together, and share knowledge in real time.</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fa-solid fa-share-nodes"></i></div>
+            <div class="feature-title">Share & Inspire</div>
+            <div class="feature-desc">Make your boards public to inspire others, or keep them private for personal use.</div>
+        </div>        
+    </div>
+    <div class="about-description">
+        <i class="fa-solid fa-graduation-cap"></i> <b>Project Purpose:</b> This platform was developed as a Final Year BCA Project by <b>Asma Firdose</b> at LBS Govt First Grade College.<br>
+        <i class="fa-solid fa-envelope"></i> <b>Contact:</b> <a href="asmafirdose22@gmail.com" style="color:#009688;text-decoration:underline;">asmafirdose22@gmail.com</a>
+    </div>
+</div>
+{% endblock %} 

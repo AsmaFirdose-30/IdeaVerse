@@ -1,0 +1,627 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<!-- FontAwesome CDN for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+    .main-content {
+        min-height: calc(100vh - 4rem);
+        padding: 2rem;
+    }
+
+    .dashboard-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .welcome-section, .board-container, .modal-content {
+        background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+        border-radius: 2rem;
+        /* fallback for old browsers */
+        /* background: #e0f7fa; */
+    }
+
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 3rem;
+        padding: 2rem;
+    }
+
+    .welcome-title {
+        color: #4a00e0;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .welcome-subtitle {
+        color: #666;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+    }
+
+    .create-board-button {
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 8px;
+        background: #6a11cb;
+        color: white;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .create-board-button:hover {
+        background: #5a0cb6;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(106, 17, 203, 0.2);
+    }
+
+    .boards-section {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        margin-top: 2rem;
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .board-container {
+        margin-bottom: 3rem;
+        padding: 2.5rem 2rem;
+    }
+
+    .section-heading {
+        color: #4a00e0;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .board-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 2.5rem;
+        padding: 0.5rem 0;
+    }
+
+    .board-item {
+        padding: 1.5rem;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .board-item:hover {
+        transform: translateY(-5px);
+    }
+
+    .board-header {
+        margin-bottom: 1.5rem;
+    }
+
+    .board-title {
+        color: #4a00e0;
+        font-size: 1.4rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .board-description {
+        color: #666;
+        margin-bottom: 0.5rem;
+    }
+
+    .board-meta {
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .content-item {
+        text-decoration: none;
+        color: #333;
+        text-align: center;
+    }
+
+    .content-icon {
+        font-size: 2rem;
+        color: #6a11cb;
+        margin-bottom: 0.5rem;
+    }
+
+    .content-name {
+        font-size: 0.8rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .board-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .custom-button, .create-board-button {
+        background: #009688;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+        box-shadow: 0 2px 8px rgba(0,150,136,0.08);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .custom-button:hover, .create-board-button:hover {
+        background: #00796b;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,150,136,0.13);
+    }
+
+    .section-heading, .board-title {
+        color: #009688;
+    }
+
+    body, .main-content, .board-description, .form-label, .form-input {
+        color: #222;
+    }
+
+    .board-meta, .note-date, .no-data {
+        color: #6c757d;
+    }
+
+    /* Search Bar Styles */
+    .search-container {
+        margin-bottom: 2rem;
+    }
+
+    .search-form {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.8rem 1rem;
+        border: none;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .search-button {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        background: #6a11cb;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .search-button:hover {
+        background: #5a0cb6;
+        transform: translateY(-2px);
+    }
+
+    /* Modal Styles */
+    .create-board-modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+        z-index: 1000;
+    }
+
+    .create-board-modal.active {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-content {
+        padding: 2rem;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        position: relative;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: #666;
+        cursor: pointer;
+    }
+
+    .custom-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .custom-input {
+        width: 100%;
+        padding: 0.8rem;
+        margin-bottom: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: white;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+        .boards-section {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 1rem;
+        }
+
+        .welcome-title {
+            font-size: 2rem;
+        }
+
+        .board-grid {
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+        .search-form {
+            flex-direction: column;
+        }
+
+        .board-actions {
+            flex-direction: column;
+        }
+
+        .custom-button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .dashboard-footer {
+        background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+        color: #222;
+        text-align: center;
+        padding: 1.5rem 0 1rem 0;
+        border-radius: 0 0 2rem 2rem;
+        margin-top: 2rem;
+        font-size: 1rem;
+        box-shadow: 0 -2px 12px rgba(0,0,0,0.06);
+    }
+    .footer-content {
+        max-width: 900px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .footer-divider {
+        margin: 0 0.5rem;
+        color: #009688;
+    }
+    .footer-tech {
+        font-size: 0.95rem;
+        color: #009688;
+    }
+    @media (max-width: 600px) {
+        .dashboard-footer {
+            font-size: 0.95rem;
+            border-radius: 0 0 1rem 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="dashboard-layout">
+        <!-- Search Bar -->
+        <div class="search-container">
+            <form method="GET" action="{% url 'search' %}" class="search-form">
+                <input type="text" name="q" class="search-input" placeholder="Search users, boards, content...">
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+        </div>
+
+        {% if recommended_boards %}
+        <div class="board-container" style="margin-bottom:2rem;">
+            <h2 class="section-heading">
+                <i class="fa-solid fa-star"></i> Recommended for you
+            </h2>
+            <div class="board-grid">
+                {% for board in recommended_boards %}
+                <div class="board-item">
+                    <div class="board-header">
+                        <h3 class="board-title">
+                            <i class="fa-solid fa-folder-open"></i> {{ board.title }}
+                        </h3>
+                        <p class="board-description">{{ board.description|default:"No description" }}</p>
+                        <p class="board-meta">By: {{ board.user.username }}</p>
+                    </div>
+                    <div class="board-actions">
+                        <a href="{% url 'board_detail' board.id %}" class="custom-button">
+                            <i class="fa-solid fa-folder-open"></i> View Board
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <h1 class="welcome-title">
+                <i class="fa-solid fa-lightbulb"></i> Welcome to IdeaVerse!
+            </h1>
+            <p class="welcome-subtitle">Create, collect and share your brilliant ideas.</p>
+        </div>
+
+        <!-- Create Board Action -->
+        <div class="create-board-action" style="text-align:center; margin-bottom:2.5rem;">
+            <button class="create-board-button" onclick="showCreateBoardModal()">
+                <i class="fa-solid fa-plus"></i> Create New Board
+            </button>
+        </div>
+
+        <!-- Create Board Modal -->
+        <div id="createBoardModal" class="create-board-modal">
+            <div class="modal-content">
+                <button class="close-modal" onclick="hideCreateBoardModal()">×</button>
+                <h2 class="section-heading">
+                    <i class="fa-solid fa-plus"></i> Create a New Board
+                </h2>
+                <form method="POST" action="{% url 'create_board' %}">
+                    {% csrf_token %}
+                    <div>
+                        <label class="custom-label" for="{{ form.title.id_for_label }}">Title</label>
+                        <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" class="custom-input" {% if form.title.value %}value="{{ form.title.value }}"{% endif %} required>
+                    </div>
+                    <div>
+                        <label class="custom-label" for="{{ form.description.id_for_label }}">Description</label>
+                        <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}" class="custom-input">{% if form.description.value %}{{ form.description.value }}{% endif %}</textarea>
+                    </div>
+                    <div style="margin-bottom: 1rem;">
+                        <input type="checkbox" name="{{ form.is_public.name }}" id="{{ form.is_public.id_for_label }}" {% if form.is_public.value %}checked{% endif %}>
+                        <label class="custom-label" style="display: inline-block; margin-left: 0.5rem;" for="{{ form.is_public.id_for_label }}">
+                            Make board public
+                        </label>
+                    </div>
+                    <button type="submit" class="custom-button">
+                        <i class="fa-solid fa-rocket"></i> Create Board
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Boards Section -->
+        <div class="boards-section">
+            <!-- Public Boards -->
+            <div class="board-container">
+                <h2 class="section-heading">
+                    <i class="fa-solid fa-globe"></i> Public Boards
+                </h2>
+                {% if public_boards %}
+                    <div class="board-grid">
+                        {% for board in public_boards %}
+                            <div class="board-item">
+                                <div class="board-header">
+                                    <h3 class="board-title">
+                                        <i class="fa-solid fa-folder-open"></i> {{ board.title }}
+                                    </h3>
+                                    <p class="board-description">{{ board.description|default:"No description" }}</p>
+                                    <p class="board-meta">Created: {{ board.created_at|date:"M d, Y" }}</p>
+                                </div>
+
+                                {% if board.file_contents.count > 0 %}
+                                    <div class="content-grid">
+                                        {% for content in board.file_contents.all %}
+                                            <a href="{% url 'content_detail' content.id %}" class="content-item">
+                                                <div class="content-icon">
+                                                    <i class="fa-solid fa-file-lines"></i>
+                                                </div>
+                                                <div class="content-name">
+                                                    {{ content.file.name|slice:"20:" }}
+                                                </div>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <p class="no-data">No content uploaded yet.</p>
+                                {% endif %}
+
+                                <div class="board-actions">
+                                    <a href="{% url 'board_detail' board.id %}" class="custom-button">
+                                        <i class="fa-solid fa-folder-open"></i> View Board
+                                    </a>
+                                    <a href="{% url 'upload_content' board.id %}" class="custom-button">
+                                        <i class="fa-solid fa-upload"></i> Upload Content
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="no-data">No public boards yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Private Boards -->
+            <div class="board-container">
+                <h2 class="section-heading">
+                    <i class="fa-solid fa-lock"></i> Private Boards
+                </h2>
+                {% if private_boards %}
+                    <div class="board-grid">
+                        {% for board in private_boards %}
+                            <div class="board-item">
+                                <div class="board-header">
+                                    <h3 class="board-title">
+                                        <i class="fa-solid fa-folder-open"></i> {{ board.title }}
+                                    </h3>
+                                    <p class="board-description">{{ board.description|default:"No description" }}</p>
+                                    <p class="board-meta">Created: {{ board.created_at|date:"M d, Y" }}</p>
+                                </div>
+
+                                {% if board.file_contents.count > 0 %}
+                                    <div class="content-grid">
+                                        {% for content in board.file_contents.all %}
+                                            <a href="{% url 'content_detail' content.id %}" class="content-item">
+                                                <div class="content-icon">
+                                                    <i class="fa-solid fa-file-lines"></i>
+                                                </div>
+                                                <div class="content-name">
+                                                    {{ content.file.name|slice:"20:" }}
+                                                </div>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <p class="no-data">No content uploaded yet.</p>
+                                {% endif %}
+
+                                <div class="board-actions">
+                                    <a href="{% url 'board_detail' board.id %}" class="custom-button">
+                                        <i class="fa-solid fa-folder-open"></i> View Board
+                                    </a>
+                                    <a href="{% url 'upload_content' board.id %}" class="custom-button">
+                                        <i class="fa-solid fa-upload"></i> Upload Content
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="no-data">No private boards yet.</p>
+                {% endif %}
+            </div>
+
+            <!-- Collaborating Boards -->
+            <div class="board-container">
+                <h2 class="section-heading">
+                    <i class="fa-solid fa-users"></i> Boards You're Collaborating On
+                </h2>
+                {% if collaborating_boards %}
+                    <div class="board-grid">
+                        {% for board in collaborating_boards %}
+                            <div class="board-item">
+                                <div class="board-header">
+                                    <h3 class="board-title">
+                                        <i class="fa-solid fa-folder-open"></i> {{ board.title }}
+                                    </h3>
+                                    <p class="board-description">{{ board.description|default:"No description" }}</p>
+                                    <p class="board-meta">Owner: {{ board.user.username }}</p>
+                                </div>
+                                {% if board.file_contents.count > 0 %}
+                                    <div class="content-grid">
+                                        {% for content in board.file_contents.all %}
+                                            <a href="{% url 'content_detail' content.id %}" class="content-item">
+                                                <div class="content-icon">
+                                                    <i class="fa-solid fa-file-lines"></i>
+                                                </div>
+                                                <div class="content-name">
+                                                    {{ content.file.name|slice:"20:" }}
+                                                </div>
+                                            </a>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <p class="no-data">No content uploaded yet.</p>
+                                {% endif %}
+                                <div class="board-actions">
+                                    <a href="{% url 'board_detail' board.id %}" class="custom-button">
+                                        <i class="fa-solid fa-folder-open"></i> View Board
+                                    </a>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="no-data">You're not collaborating on any boards yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="dashboard-footer">
+  <div class="footer-content">
+    <div>
+      <strong>IdeaVerse</strong> &copy; {% now "Y" %}
+      <span class="footer-divider">|</span>
+      Final Year BCA Project
+    </div>
+    <div>
+      Developed by <strong>Asma Firdose</strong>, LBS Govt First Grade College
+    </div>
+    <div class="footer-tech">
+      <span>Powered by Django & Bootstrap</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+function showCreateBoardModal() {
+    document.getElementById('createBoardModal').classList.add('active');
+}
+
+function hideCreateBoardModal() {
+    document.getElementById('createBoardModal').classList.remove('active');
+}
+
+// Close modal when clicking outside
+document.getElementById('createBoardModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideCreateBoardModal();
+    }
+});
+</script>
+{% endblock %}

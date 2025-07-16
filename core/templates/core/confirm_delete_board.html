@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="main-content" style="max-width:600px;margin:3rem auto;">
+    <div class="board-container" style="text-align:center;">
+        <h2 style="color:#e74c3c;"><i class="fa-solid fa-trash"></i> Delete Board</h2>
+        <p>Are you sure you want to delete the board <strong>{{ board.title }}</strong>? This action cannot be undone and will remove all notes, files, and collaboration details associated with this board.</p>
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="custom-button" style="background:#e74c3c;">Yes, Delete Board</button>
+            <a href="{% url 'board_detail' board.id %}" class="custom-button" style="background:#6c757d; margin-left:1rem;">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %} 

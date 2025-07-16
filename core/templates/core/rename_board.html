@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+    .rename-board-container {
+        background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+        padding: 2.5rem;
+        border-radius: 2rem;
+        box-shadow: 0 8px 32px var(--shadow-color);
+        max-width: 600px;
+        margin: 3rem auto;
+        border: 1px solid var(--border-color);
+    }
+    .rename-title {
+        color: #f39c12;
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 0.5rem;
+    }
+    .form-input, textarea, select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: var(--card-bg);
+        color: #222;
+    }
+    .form-input:focus, textarea:focus, select:focus {
+        border-color: #f39c12;
+        box-shadow: 0 0 0 3px var(--shadow-color);
+        outline: none;
+    }
+    .custom-button {
+        padding: 0.8rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        background: #f39c12;
+        color: #fff;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 2px 8px rgba(243,156,18,0.08);
+        margin-top: 1rem;
+    }
+    .custom-button:hover {
+        background: #d35400;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(243,156,18,0.13);
+    }
+    .cancel-button {
+        background: #6c757d;
+        margin-left: 1rem;
+    }
+    @media (max-width: 700px) {
+        .rename-board-container {
+            padding: 1.2rem;
+        }
+        .rename-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+{% block content %}
+<div class="rename-board-container">
+    <h2 class="rename-title"><i class="fa-solid fa-pen-to-square"></i> Rename Board</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <label class="form-label" for="{{ form.title.id_for_label }}">Title</label>
+            {{ form.title }}
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="{{ form.description.id_for_label }}">Description</label>
+            {{ form.description }}
+        </div>
+        <div class="form-group">
+            <label class="form-label" for="{{ form.is_public.id_for_label }}">Public Board</label>
+            {{ form.is_public }}
+        </div>
+        <button type="submit" class="custom-button"><i class="fa-solid fa-save"></i> Save Changes</button>
+        <a href="{% url 'board_detail' board.id %}" class="custom-button cancel-button">Cancel</a>
+    </form>
+</div>
+{% endblock %} 

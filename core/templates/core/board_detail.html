@@ -1,0 +1,531 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+    .main-content {
+        min-height: calc(100vh - 4rem);
+        padding: 2rem;
+    }
+
+    .board-container {
+        background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+        /* fallback for old browsers */
+        /* background: #e0f7fa; */
+        padding: 2.5rem;
+        border-radius: 2rem;
+        box-shadow: 0 8px 32px var(--shadow-color);
+        backdrop-filter: blur(10px);
+        max-width: 1200px;
+        margin: 0 auto;
+        border: 1px solid var(--border-color);
+    }
+
+    .board-header {
+        margin-bottom: 3rem;
+    }
+
+    .board-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #009688;
+        margin-bottom: 1rem;
+    }
+
+    .board-description {
+        font-size: 1.1rem;
+        color: #6c757d;
+        margin-bottom: 2rem;
+    }
+
+    .notes-section {
+        margin-bottom: 3rem;
+        border-radius: 1.25rem;
+    }
+
+    .section-heading {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #009688;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid var(--border-color);
+    }
+
+    .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .note-card {
+        background: var(--card-bg);
+        padding: 1rem 1rem 0.5rem 1rem;
+        border-radius: 1.25rem;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        min-height: 120px;
+        align-items: flex-start;
+    }
+
+    .note-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 24px var(--hover-shadow);
+    }
+
+    .note-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .note-title {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--profile-accent-dark);
+        margin: 0;
+        word-break: break-all;
+    }
+
+    .note-date {
+        font-size: 0.75rem;
+        color: #6c757d;
+        white-space: nowrap;
+    }
+
+    .note-content {
+        color: #222;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        flex-grow: 1;
+    }
+
+    .note-actions {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        margin-top: 0.5rem;
+    }
+
+    .add-note-button {
+        background: #009688;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+        box-shadow: 0 2px 8px rgba(0,150,136,0.08);
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .add-note-button:hover {
+        background: #00796b;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,150,136,0.13);
+    }
+
+    .no-notes {
+        text-align: center;
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: 1rem;
+        color: #6c757d;
+        font-style: italic;
+        border: 1px solid var(--border-color);
+    }
+
+    /* Modal Styles */
+    .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal.active {
+        display: flex;
+    }
+
+    .modal-content {
+        background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+        /* fallback for old browsers */
+        /* background: #e0f7fa; */
+        padding: 2rem;
+        border-radius: 2rem;
+        width: 90%;
+        max-width: 600px;
+        box-shadow: 0 8px 32px var(--shadow-color);
+        border: 1px solid var(--border-color);
+        position: relative;
+    }
+
+    .close-modal {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        color: var(--text-secondary);
+        cursor: pointer;
+        padding: 0.5rem;
+        line-height: 1;
+    }
+
+    .close-modal:hover {
+        color: var(--text-primary);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        font-weight: 600;
+        color: #222;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid var(--border-color);
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: var(--card-bg);
+        color: #222;
+    }
+
+    .form-input:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px var(--shadow-color);
+        outline: none;
+    }
+
+    textarea.form-input {
+        min-height: 150px;
+        resize: vertical;
+    }
+
+    .modal-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .view-btn {
+        background: #6a11cb;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 0.4rem 1.1rem;
+        font-weight: 600;
+        font-size: 0.95rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        text-decoration: none;
+        box-shadow: 0 1px 4px rgba(106,17,203,0.08);
+        transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    }
+
+    .view-btn:hover {
+        background: #5a0cb6;
+        transform: translateY(-2px);
+        color: #fff;
+        box-shadow: 0 3px 12px rgba(106,17,203,0.13);
+    }
+
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 1rem;
+        }
+
+        .board-container {
+            padding: 1.5rem;
+        }
+
+        .board-title {
+            font-size: 2rem;
+        }
+
+        .notes-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .note-card {
+            padding: 0.75rem 0.75rem 0.5rem 0.75rem;
+        }
+    }
+
+    .custom-button {
+        flex: 1;
+        padding: 0.8rem;
+        border: none;
+        border-radius: 8px;
+        background: #009688;
+        color: #fff;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+        font-weight: 600;
+        font-size: 1rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        box-shadow: 0 2px 8px rgba(0,150,136,0.08);
+    }
+    .custom-button:hover {
+        background: #00796b;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0,150,136,0.13);
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="board-container">
+        <div class="board-header">
+            <a href="{% url 'dashboard' %}" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Dashboard
+            </a>
+            <h1 class="board-title">{{ board.title }}</h1>
+            <p class="board-description">{{ board.description }}</p>
+            
+            {% if request.user == board.user or request.user in collaborators %}
+            <a href="{% url 'upload_content' board.id %}" class="custom-button" style="margin-bottom:1rem;">
+                <i class="fa-solid fa-upload"></i> Upload Content
+            </a>
+            {% endif %}
+            <button onclick="showAddNoteModal()" class="custom-button">
+                <i class="fa-solid fa-plus"></i>
+                Add New Note
+            </button>
+            {% if request.user == board.user %}
+            <a href="{% url 'rename_board' board.id %}" class="custom-button" style="background:#f39c12; margin-left:1rem;">
+                <i class="fa-solid fa-pen-to-square"></i> Rename Board
+            </a>
+            <form method="post" action="{% url 'delete_board' board.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="custom-button" style="background:#e74c3c; margin-left:1rem;" onclick="return confirm('Are you sure you want to delete this entire board? This action cannot be undone.')">
+                    <i class="fa-solid fa-trash"></i> Delete Board
+                </button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- Notes Section -->
+        <div class="notes-section">
+            <h2 class="section-heading">
+                <i class="fa-solid fa-file-lines"></i>
+                Notes
+            </h2>
+            {% if text_contents %}
+                <div class="notes-grid">
+                    {% for content in text_contents %}
+                        <div class="note-card">
+                            <div class="note-header">
+                                <h3 class="note-title">{{ content.title }}</h3>
+                                <span class="note-date">{{ content.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="note-content">{{ content.description }}</div>
+                            <div class="note-actions">
+                                <a href="{% url 'edit_note' board.id content.id %}" class="custom-button">
+                                    <i class="fa-solid fa-pen"></i>
+                                    Edit
+                                </a>
+                                {% if request.user == board.user %}
+                                <a href="{% url 'delete_content' board.id content.id %}" class="custom-button" style="background:#e74c3c;" onclick="return confirm('Are you sure you want to delete this note?')">
+                                    <i class="fa-solid fa-trash"></i>
+                                    Delete
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-notes">
+                    <i class="fa-solid fa-file-lines"></i>
+                    <p>No notes added yet. Click "Add New Note" to get started!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- File Contents Section -->
+        <div class="file-contents-section" style="margin-bottom: 3rem;">
+            <h2 class="section-heading">
+                <i class="fa-solid fa-folder-open"></i>
+                File Contents
+            </h2>
+            {% if contents %}
+                <div class="notes-grid">
+                    {% for file in contents %}
+                        <div class="note-card">
+                            <div class="note-header">
+                                <h3 class="note-title">
+                                    <i class="fa-solid fa-file"></i> {{ file.title|default:file.file.name }}
+                                </h3>
+                                <span class="note-date">{{ file.created_at|date:"M d, Y" }}</span>
+                            </div>
+                            <div class="note-content">
+                                {% if file.description %}<p>{{ file.description }}</p>{% endif %}
+                            </div>
+                            <div class="note-actions">
+                                <a href="{% url 'content_detail' file.id %}" class="view-btn">
+                                    <i class="fa-solid fa-eye"></i> View
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="no-notes">
+                    <i class="fa-solid fa-folder-open"></i>
+                    <p>No file contents uploaded yet.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        {% if show_collaboration %}
+        <div style="margin-top: 1.5rem;">
+            <h4 style="font-size:1.2rem; font-weight:600; color:#009688; margin-bottom:0.5rem;">Collaborators</h4>
+            <ul style="list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:1rem;">
+                <li style="font-weight:600; color:#4a00e0;">👑 {{ board.user.username }} (Owner)</li>
+                {% for user in collaborators %}
+                    <li style="background:var(--background-light); padding:0.5rem 1rem; border-radius:0.5rem; color:#333;">
+                        <i class="fa-solid fa-user"></i> {{ user.username }}
+                        {% if request.user == board.user %}
+                        <form method="post" action="" style="display:inline; margin-left:0.5rem;">
+                            {% csrf_token %}
+                            <input type="hidden" name="remove_collaborator" value="{{ user.username }}">
+                            <button type="submit" style="background:none; border:none; color:#e74c3c; cursor:pointer; font-size:1rem;" title="Remove">
+                                <i class="fa-solid fa-user-minus"></i>
+                            </button>
+                        </form>
+                        {% endif %}
+                    </li>
+                {% empty %}
+                    <li style="color:#888;">No collaborators yet.</li>
+                {% endfor %}
+            </ul>
+            {% if request.user == board.user %}
+            <form method="post" action="" style="margin-top:1rem; display:flex; gap:0.5rem; align-items:center;">
+                {% csrf_token %}
+                <input type="text" name="invite_username" placeholder="Invite by username" required style="padding:0.5rem 1rem; border-radius:0.5rem; border:1px solid #ccc;">
+                <button type="submit" class="add-note-button" style="padding:0.5rem 1.2rem;">
+                    <i class="fa-solid fa-user-plus"></i> Invite
+                </button>
+            </form>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Add Note Modal -->
+<div id="addNoteModal" class="modal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="hideAddNoteModal()">×</button>
+        <h2 class="section-heading">
+            <i class="fa-solid fa-plus"></i>
+            Add New Note
+        </h2>
+        <form method="POST" action="{% url 'upload_text_content' board.id %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label" for="{{ text_form.title.id_for_label }}">Title</label>
+                <input type="text" name="{{ text_form.title.name }}" id="{{ text_form.title.id_for_label }}" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="{{ text_form.description.id_for_label }}">Content</label>
+                <textarea name="{{ text_form.description.name }}" id="{{ text_form.description.id_for_label }}" class="form-input" rows="6" required></textarea>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="button" onclick="hideAddNoteModal()">Cancel</button>
+                <button type="submit" class="button">
+                    <i class="fa-solid fa-save"></i>
+                    Save Note
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function showAddNoteModal() {
+    document.getElementById('addNoteModal').classList.add('active');
+}
+
+function hideAddNoteModal() {
+    document.getElementById('addNoteModal').classList.remove('active');
+}
+
+// Close modal when clicking outside
+document.getElementById('addNoteModal').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideAddNoteModal();
+    }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Like functionality for file contents
+    const likeButtons = document.querySelectorAll('.like-button');
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const contentId = this.dataset.contentId;
+            fetch(`/content/${contentId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const likeText = this.querySelector('.like-text');
+                if (data.liked) {
+                    this.style.color = '#dc3545';
+                    likeText.textContent = 'Unlike';
+                } else {
+                    this.style.color = '';
+                    likeText.textContent = 'Like';
+                }
+                // Update likes count
+                const likeCount = this.querySelector('.like-count');
+                likeCount.textContent = data.likes_count;
+            });
+        });
+    });
+});
+</script>
+{% endblock %}

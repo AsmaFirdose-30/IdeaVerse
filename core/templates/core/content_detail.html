@@ -1,0 +1,476 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<script src="https://unpkg.com/medium-zoom@1.0.6/dist/medium-zoom.min.js"></script>
+<style>
+    .main-content {
+        min-height: calc(100vh - 4rem);
+        padding: 2rem;
+    }
+
+    .content-container {
+        background: var(--card-bg);
+        padding: 2.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px var(--shadow-color);
+        backdrop-filter: blur(10px);
+        max-width: 1200px;
+        margin: 0 auto;
+        border: 1px solid var(--border-color);
+    }
+
+    .content-header {
+        margin-bottom: 2rem;
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+        color: var(--accent-color);
+        transform: translateX(-5px);
+    }
+
+    .content-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .content-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+    }
+
+    .content-preview {
+        margin-bottom: 2rem;
+        border-radius: 1rem;
+        overflow: hidden;
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        padding: 3rem;
+        text-align: center;
+    }
+
+    .preview-image {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 0 auto;
+        cursor: zoom-in;
+        transition: transform 0.3s ease;
+    }
+
+    .preview-video {
+        width: 100%;
+        max-height: 600px;
+        border-radius: 0.5rem;
+        background: #000;
+    }
+
+    .pdf-preview {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.5rem;
+        padding: 2rem;
+    }
+
+    .pdf-icon {
+        font-size: 4rem;
+        color: var(--accent-color);
+    }
+
+    .pdf-message {
+        font-size: 1.2rem;
+        color: var(--text-primary);
+        margin-bottom: 1rem;
+    }
+
+    .view-pdf-button {
+        background: var(--secondary-gradient);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    .view-pdf-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px var(--hover-shadow);
+        color: white;
+    }
+
+    .doc-container {
+        height: 800px;
+        width: 100%;
+    }
+
+    .text-preview {
+        padding: 2rem;
+        background: var(--card-bg);
+        border-radius: 1rem;
+    }
+
+    .button {
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+    }
+
+    .button-primary {
+        background: var(--secondary-gradient);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    .button-secondary {
+        background: var(--bg-secondary);
+        color: var(--text-secondary);
+        border: 1px solid var(--border-color);
+    }
+
+    .button:hover {
+        transform: translateY(-2px);
+    }
+
+    .content-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .medium-zoom-overlay {
+        background: var(--bg-secondary) !important;
+    }
+
+    .medium-zoom-image--opened {
+        cursor: zoom-out;
+    }
+
+    .button-danger {
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        color: white;
+        border: none;
+        box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    }
+
+    .button-danger:hover {
+        box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 1rem;
+        }
+
+        .content-container {
+            padding: 1.5rem;
+        }
+
+        .content-title {
+            font-size: 1.5rem;
+        }
+
+        .doc-container {
+            height: 500px;
+        }
+
+        .pdf-icon {
+            font-size: 3rem;
+        }
+
+        .pdf-message {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2>{{ content.title }}</h2>
+                    <small class="text-muted">
+                        Posted by {{ content.user.username }} on {{ content.created_at|date:"F j, Y" }}
+                    </small>
+                </div>
+                <div class="card-body">
+                    {% if content.file %}
+                        <div class="content-preview">
+                            {% if content.content_type == 'image' %}
+                                <img src="{{ content.file.url }}" class="preview-image" alt="{{ content.title }}" id="zoom-image">
+                            {% elif content.content_type == 'video' %}
+                                <video controls class="preview-video">
+                <source src="{{ content.file.url }}" type="video/mp4">
+                                    <source src="{{ content.file.url }}" type="video/webm">
+                                    <source src="{{ content.file.url }}" type="video/quicktime">
+                                    <source src="{{ content.file.url }}" type="video/x-msvideo">
+                                    <p>Your browser does not support the video tag. <a href="{{ content.file.url }}" download class="button button-primary">Download Video</a></p>
+            </video>
+                            {% elif content.content_type == 'pdf' %}
+                                <div class="pdf-preview">
+                                    <i class="fas fa-file-pdf pdf-icon"></i>
+                                    <p class="pdf-message">Click below to view the PDF in your browser</p>
+                                    <a href="{{ content.file.url }}" target="_blank" class="view-pdf-button">
+                                        <i class="fas fa-eye"></i> View PDF
+                                    </a>
+                                </div>
+        {% else %}
+                                <div class="preview-fallback">
+                                    <i class="fas fa-file fa-3x"></i>
+                                    <p>Preview not available for this file type</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    {% if content.text %}
+                        <div class="content-text mb-3">
+                            {{ content.text|linebreaks }}
+                        </div>
+                    {% endif %}
+                    
+                    <div class="content-meta mb-3">
+                        <span class="badge bg-secondary me-2">
+                            <i class="fas fa-eye"></i> {{ content.views }} views
+                        </span>
+                        <span class="badge bg-secondary me-2">
+                            <i class="fas fa-heart"></i> {{ content.likes.count }} likes
+                        </span>
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-comment"></i> {{ content.comments.count }} comments
+                        </span>
+                    </div>
+                    
+                    <div class="content-actions">
+                        <a href="{{ content.file.url }}" class="button button-primary" download>
+                            <i class="fas fa-download"></i> Download
+                        </a>
+                        {% if content.user == user or content.board.user == user %}
+                            <a href="{% url 'delete_content' content.board.id content.id %}" class="button button-danger" onclick="return confirm('Are you sure you want to delete this content?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+        {% endif %}
+    </div>
+
+                    <div class="content-actions mb-4">
+                        <button class="btn btn-outline-primary me-2 like-button" 
+                                data-content-id="{{ content.id }}"
+                                {% if user_liked %}style="color: #dc3545;"{% endif %}>
+                            <i class="fas fa-heart"></i> 
+                            <span class="like-text">{% if user_liked %}Unlike{% else %}Like{% endif %}</span>
+                        </button>
+                        
+                        <button class="btn btn-outline-primary comment-toggle">
+                            <i class="fas fa-comment"></i> Comment
+                        </button>
+                    </div>
+                    
+                    <div class="comment-form mb-4" style="display: none;">
+                        <form id="comment-form" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <textarea class="form-control" name="comment" rows="3" 
+                                          placeholder="Write your comment..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Post Comment</button>
+                        </form>
+                    </div>
+                    
+                    <div class="comments-section">
+                        <h4>Comments</h4>
+                        <div id="comments-list">
+                            {% for comment in comments %}
+                                <div class="card mb-2" id="comment-{{ comment.id }}">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="card-subtitle mb-2 text-muted">
+                                                {{ comment.user.username }}
+                                            </h6>
+                                            <small class="text-muted">
+                                                {{ comment.commented_at|date:"F j, Y, g:i a" }}
+                                            </small>
+                                        </div>
+                                        <p class="card-text">{{ comment.comment }}</p>
+                                        {% if comment.user == user %}
+                                            <button class="btn btn-sm btn-danger delete-comment" 
+                                                    data-comment-id="{{ comment.id }}">
+                                                Delete
+                                            </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            {% empty %}
+                                <p class="text-muted">No comments yet.</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize medium-zoom for images
+    if (document.getElementById('zoom-image')) {
+        mediumZoom('#zoom-image', {
+            margin: 24,
+            background: 'rgba(0, 0, 0, 0.9)',
+            scrollOffset: 0,
+        });
+    }
+
+    // Like functionality
+    const likeButtons = document.querySelectorAll('.like-button');
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const contentId = this.dataset.contentId;
+            fetch(`/content/${contentId}/like/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                const likeText = this.querySelector('.like-text');
+                if (data.liked) {
+                    this.style.color = '#dc3545';
+                    likeText.textContent = 'Unlike';
+                } else {
+                    this.style.color = '';
+                    likeText.textContent = 'Like';
+                }
+                // Update likes count
+                const likesBadge = document.querySelector('.badge.bg-secondary.me-2:nth-child(2)');
+                if (likesBadge) {
+                    likesBadge.innerHTML = `<i class='fas fa-heart'></i> ${data.likes_count} likes`;
+                }
+            });
+        });
+    });
+
+    // Comment form toggle
+    const commentToggle = document.querySelector('.comment-toggle');
+    const commentForm = document.querySelector('.comment-form');
+    if (commentToggle && commentForm) {
+        commentToggle.addEventListener('click', function() {
+            commentForm.style.display = commentForm.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+
+    // Submit comment
+    const commentFormElement = document.getElementById('comment-form');
+    if (commentFormElement) {
+        commentFormElement.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const contentId = {{ content.id }};
+            const commentText = this.querySelector('textarea[name="comment"]').value;
+            fetch(`/content/${contentId}/comment/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ comment: commentText })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                }
+            });
+        });
+    }
+
+    // Delete comment
+    document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('delete-comment')) {
+            const commentId = e.target.dataset.commentId;
+            fetch(`/comment/${commentId}/delete/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const commentElement = document.getElementById(`comment-${commentId}`);
+                    if (commentElement) commentElement.remove();
+                    // Update comments count
+                    const commentsBadge = document.querySelector('.badge.bg-secondary:last-child');
+                    if (commentsBadge) {
+                        const currentCount = parseInt(commentsBadge.textContent.match(/\d+/)[0]);
+                        commentsBadge.innerHTML = `<i class='fas fa-comment'></i> ${currentCount - 1} comments`;
+                    }
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

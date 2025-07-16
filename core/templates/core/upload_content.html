@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+    :root {
+        --primary-gradient: linear-gradient(135deg, #74ebd5, #ACB6E5);
+        --secondary-gradient: linear-gradient(135deg, #009688, #00796b);
+        --accent-color: #009688;
+        --text-primary: #2c3e50;
+        --text-secondary: #6c757d;
+        --background-light: #f8f9fa;
+    }
+
+    .main-content {
+        background: var(--primary-gradient);
+        min-height: calc(100vh - 4rem);
+        padding: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+    }
+
+    .upload-container {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 2.5rem;
+        border-radius: 1.5rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        width: 100%;
+        max-width: 600px;
+        margin-top: 2rem;
+    }
+
+    .upload-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        margin-bottom: 2rem;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .upload-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .file-input-container {
+        position: relative;
+        width: 100%;
+    }
+
+    .file-input {
+        width: 100%;
+        padding: 3rem 1rem;
+        border: 2px dashed var(--accent-color);
+        border-radius: 0.75rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: var(--background-light);
+        position: relative;
+    }
+
+    .file-input:hover {
+        border-color: #00796b;
+        background: #fff;
+    }
+
+    .file-input::file-selector-button {
+        display: none;
+    }
+
+    .file-input-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: var(--text-secondary);
+        pointer-events: none;
+        width: 100%;
+        padding: 0 1rem;
+    }
+
+    .file-icon {
+        font-size: 2rem;
+        color: var(--accent-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .content-type-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e9ecef;
+        border-radius: 0.75rem;
+        font-size: 1rem;
+        color: var(--text-primary);
+        background-color: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .content-type-select:focus {
+        border-color: var(--accent-color);
+        box-shadow: 0 0 0 3px rgba(0, 150, 136, 0.1);
+        outline: none;
+    }
+
+    .upload-button {
+        background: var(--secondary-gradient);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        width: 100%;
+        box-shadow: 0 4px 15px rgba(0, 150, 136, 0.3);
+    }
+
+    .upload-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 150, 136, 0.4);
+    }
+
+    .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-weight: 500;
+        margin-top: 1.5rem;
+        transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+        color: var(--accent-color);
+        transform: translateX(-5px);
+    }
+
+    @media (max-width: 768px) {
+        .main-content {
+            padding: 1rem;
+        }
+
+        .upload-container {
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .upload-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="upload-container">
+        <h2 class="upload-title">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            Upload Content to "{{ board.title }}"
+        </h2>
+        
+        <form method="post" enctype="multipart/form-data" class="upload-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fa-solid fa-file"></i>
+                    Choose File
+                </label>
+                <div class="file-input-container">
+                    <input type="file" name="file" class="file-input" id="file-input" required>
+                    <div class="file-input-label">
+                        <i class="fa-solid fa-cloud-arrow-up file-icon"></i>
+                        <div>Drag and drop your file here or click to browse</div>
+                        <div style="font-size: 0.8rem; margin-top: 0.5rem;">Supported formats: PNG, JPG, PDF, DOC, MP4, WebM, AVI</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fa-solid fa-tag"></i>
+                    Content Type
+                </label>
+                <select name="content_type" class="content-type-select" required>
+                    <option value="">Select content type</option>
+                    <option value="image">Image</option>
+                    <option value="video">Video</option>
+                    <option value="pdf">PDF</option>
+                    <option value="doc">Document</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <button type="submit" class="upload-button">
+                <i class="fa-solid fa-upload"></i>
+                Upload Content
+            </button>
+        </form>
+
+        <div style="text-align: center;">
+            <a href="{% url 'board_detail' board.id %}" class="back-link">
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Board
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Update file input label when file is selected
+document.getElementById('file-input').addEventListener('change', function(e) {
+    const fileName = e.target.files[0]?.name;
+    if (fileName) {
+        const label = this.parentElement.querySelector('.file-input-label');
+        label.innerHTML = `
+            <i class="fa-solid fa-file file-icon"></i>
+            <div>${fileName}</div>
+        `;
+    }
+});
+
+// Handle drag and drop
+const fileInput = document.getElementById('file-input');
+const dropZone = fileInput.parentElement;
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, unhighlight, false);
+});
+
+function highlight(e) {
+    dropZone.querySelector('.file-input').style.borderColor = '#00796b';
+    dropZone.querySelector('.file-input').style.background = '#fff';
+}
+
+function unhighlight(e) {
+    dropZone.querySelector('.file-input').style.borderColor = '';
+    dropZone.querySelector('.file-input').style.background = '';
+}
+
+dropZone.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    fileInput.files = files;
+    
+    if (files[0]) {
+        const label = dropZone.querySelector('.file-input-label');
+        label.innerHTML = `
+            <i class="fa-solid fa-file file-icon"></i>
+            <div>${files[0].name}</div>
+        `;
+    }
+}
+</script>
+{% endblock %}
