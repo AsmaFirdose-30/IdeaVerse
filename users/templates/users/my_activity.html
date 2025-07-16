@@ -1,0 +1,368 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Activity{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --profile-card-bg: #fff;
+    --profile-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    --profile-radius: 16px;
+    --profile-accent: #6a11cb;
+    --profile-accent-dark: #4a00e0;
+}
+.activity-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border-radius: 2rem;
+    /* fallback for old browsers */
+    /* background: #e0f7fa; */
+}
+.activity-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+.activity-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    color: var(--profile-accent-dark);
+}
+.activity-subtitle {
+    color: #888;
+}
+.activity-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+.tab-button {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: var(--profile-card-bg);
+    color: #888;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.tab-button.active, .tab-button:hover {
+    background: linear-gradient(135deg, var(--profile-accent), var(--profile-accent-dark));
+    color: white;
+    border-color: var(--profile-accent);
+}
+.activity-section {
+    display: none;
+}
+.activity-section.active {
+    display: block;
+}
+.activity-list {
+    display: grid;
+    gap: 1rem;
+}
+.activity-card {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border-radius: 2rem;
+    padding: 1.5rem;
+    box-shadow: var(--profile-shadow);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    transition: box-shadow 0.3s;
+}
+.activity-card:hover {
+    box-shadow: 0 12px 32px rgba(106,17,203,0.13);
+}
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--profile-accent);
+    color: white;
+    flex-shrink: 0;
+    font-size: 1.2rem;
+}
+.activity-content {
+    flex-grow: 1;
+}
+.activity-title {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    text-align: left;
+}
+.activity-meta {
+    color: #888;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.activity-details {
+    margin-top: 0.5rem;
+    color: #222;
+}
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+}
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--profile-accent);
+}
+@media (max-width: 768px) {
+    .activity-container {
+        padding: 1rem 0.5rem;
+    }
+}
+.button {
+    background: #009688;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,150,136,0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+.button:hover {
+    background: #00796b;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,150,136,0.13);
+}
+.section-title, .activity-title, h1 {
+    color: #009688;
+}
+body, .activity-container, .activity-message, .form-label, .form-input {
+    color: #222;
+}
+.activity-meta, .empty-state {
+    color: #6c757d;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="activity-container">
+    <div class="activity-header">
+        <h1 class="activity-title">
+            <i class="fas fa-chart-line"></i>
+            My Activity
+        </h1>
+        <p class="activity-subtitle">Track your interactions and contributions</p>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="activity-section" style="margin-bottom: 2rem;">
+        <h2 class="section-title">
+            <i class="fas fa-clock"></i>
+            Recent Activity
+        </h2>
+        {% if uploads|length > 0 or content_likes|length > 0 or content_comments|length > 0 %}
+            <div class="activity-grid">
+                {% for upload in uploads|slice:":3" %}
+                    <div class="activity-card">
+                        <div class="activity-header">
+                            <div class="activity-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <div>
+                                <h3>Uploaded Content</h3>
+                                <div class="activity-meta">
+                                    {{ upload.created_at|date:"F j, Y" }}
+                                </div>
+                            </div>
+                        </div>
+                        <p>{{ upload.title }}</p>
+                    </div>
+                {% endfor %}
+                {% for like in content_likes|slice:":3" %}
+                    <div class="activity-card">
+                        <div class="activity-header">
+                            <div class="activity-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div>
+                                <h3>Liked Content</h3>
+                                <div class="activity-meta">
+                                    {{ like.liked_at|date:"F j, Y" }}
+                                </div>
+                            </div>
+                        </div>
+                        <p>{{ like.content.title|default:like.content.file.name }}</p>
+                    </div>
+                {% endfor %}
+                {% for comment in content_comments|slice:":3" %}
+                    <div class="activity-card">
+                        <div class="activity-header">
+                            <div class="activity-icon">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <div>
+                                <h3>Commented</h3>
+                                <div class="activity-meta">
+                                    {{ comment.commented_at|date:"F j, Y" }}
+                                </div>
+                            </div>
+                        </div>
+                        <p>{{ comment.comment }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-clock"></i>
+                <h3>No Recent Activity</h3>
+                <p>Your activity will appear here once you start using IdeaVerse.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="activity-tabs">
+        <button class="tab-button active" onclick="showTab('uploads')">
+            <i class="fas fa-upload"></i>
+            Uploads
+            <span class="badge">{{ uploads.count }}</span>
+        </button>
+        <button class="tab-button" onclick="showTab('content_comments')">
+            <i class="fas fa-comment"></i>
+            Content Comments
+            <span class="badge">{{ content_comments.count }}</span>
+        </button>
+        <button class="tab-button" onclick="showTab('content_likes')">
+            <i class="fas fa-heart"></i>
+            Content Likes
+            <span class="badge">{{ content_likes.count }}</span>
+        </button>
+    </div>
+
+    <div id="uploads" class="activity-section active">
+        <div class="activity-list">
+            {% if uploads %}
+                {% for upload in uploads %}
+                <div class="activity-card">
+                    <div class="activity-icon">
+                        <i class="fas fa-upload"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h3 class="activity-title">Uploaded a file to {{ upload.board.title }}</h3>
+                        <div class="activity-meta">
+                            <i class="fas fa-clock"></i>
+                            {{ upload.created_at|timesince }} ago
+                        </div>
+                        <div class="activity-details">
+                            {{ upload.file.name }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-cloud-upload-alt empty-icon"></i>
+                    <p>You haven't uploaded any files yet</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="content_comments" class="activity-section">
+        <div class="activity-list">
+            {% if content_comments %}
+                {% for comment in content_comments %}
+                <div class="activity-card">
+                    <div class="activity-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h3 class="activity-title">Commented on content in {{ comment.content.board.title }}</h3>
+                        <div class="activity-meta">
+                            <i class="fas fa-clock"></i>
+                            {{ comment.commented_at|timesince }} ago
+                        </div>
+                        <div class="activity-details">
+                            {{ comment.comment|truncatechars:200 }}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-comments empty-icon"></i>
+                    <p>You haven't made any content comments yet</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="content_likes" class="activity-section">
+        <div class="activity-list">
+            {% if content_likes %}
+                {% for like in content_likes %}
+                <div class="activity-card">
+                    <div class="activity-icon">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                    <div class="activity-content">
+                        <h3 class="activity-title">Liked content in {{ like.content.board.title }}</h3>
+                        <div class="activity-meta">
+                            <i class="fas fa-clock"></i>
+                            {{ like.liked_at|timesince }} ago
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-heart empty-icon"></i>
+                    <p>You haven't liked any content yet</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+
+<script>
+function showTab(tabId) {
+    // Hide all sections
+    document.querySelectorAll('.activity-section').forEach(section => {
+        section.classList.remove('active');
+    });
+    
+    // Show selected section
+    document.getElementById(tabId).classList.add('active');
+    
+    // Update tab buttons
+    document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+    });
+    event.currentTarget.classList.add('active');
+}
+</script>
+{% endblock %} 

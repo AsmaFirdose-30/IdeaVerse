@@ -1,0 +1,256 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Account Settings{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --profile-card-bg: #fff;
+    --profile-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    --profile-radius: 16px;
+    --profile-accent: #6a11cb;
+    --profile-accent-dark: #4a00e0;
+}
+.settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    display: grid;
+    gap: 2rem;
+}
+.settings-card, .account-settings-card {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    border-radius: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+    padding: 2rem;
+}
+.settings-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--profile-accent-dark);
+}
+.form-group {
+    margin-bottom: 1.5rem;
+}
+.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+}
+.form-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 0.5rem;
+    background: #fff;
+    color: #222;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+.form-input:focus {
+    outline: none;
+    border-color: var(--profile-accent);
+    box-shadow: 0 0 0 2px rgba(106, 17, 203, 0.1);
+}
+.form-help {
+    font-size: 0.875rem;
+    color: #888;
+    margin-top: 0.25rem;
+}
+.form-error {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+.button, .auth-button {
+    background: #009688;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,150,136,0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+.button:hover, .auth-button:hover {
+    background: #00796b;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,150,136,0.13);
+}
+.button-secondary {
+    background: #f3f4f6;
+    color: #666;
+    border: 1px solid #ccc;
+}
+.button-secondary:hover {
+    background: #e0e7ef;
+    color: #222;
+}
+.button-danger {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+    border: none;
+}
+.button-danger:hover {
+    background: linear-gradient(135deg, #c82333, #bd2130);
+    color: white;
+}
+.settings-section {
+    margin-bottom: 2rem;
+}
+.settings-section:last-child {
+    margin-bottom: 0;
+}
+.section-divider {
+    height: 1px;
+    background: #eee;
+    margin: 2rem 0;
+}
+@media (max-width: 600px) {
+    .settings-container {
+        padding: 1rem 0.5rem;
+    }
+    .settings-card {
+        padding: 1rem;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-card">
+        <h1 class="settings-title">
+            <i class="fas fa-user-cog"></i>
+            Account Information
+        </h1>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="update_account" value="1">
+
+            <div class="form-group">
+                <label class="form-label">Username</label>
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="form-error">{{ form.username.errors.0 }}</div>
+                {% endif %}
+                <div class="form-help">This is your unique identifier on IdeaVerse.</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="form-error">{{ form.email.errors.0 }}</div>
+                {% endif %}
+                <div class="form-help">Your email address is used for notifications and account recovery.</div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">First Name</label>
+                {{ form.first_name }}
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Last Name</label>
+                {{ form.last_name }}
+            </div>
+
+            <button type="submit" class="button">
+                <i class="fas fa-save"></i>
+                Save Changes
+            </button>
+        </form>
+
+        <div class="section-divider"></div>
+
+        <div class="settings-section">
+            <h2 class="settings-title">
+                <i class="fas fa-lock"></i>
+                Change Password
+            </h2>
+
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="change_password" value="1">
+
+                <div class="form-group">
+                    <label class="form-label">Current Password</label>
+                    {{ password_form.old_password }}
+                    {% if password_form.old_password.errors %}
+                        <div class="form-error">{{ password_form.old_password.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">New Password</label>
+                    {{ password_form.new_password1 }}
+                    {% if password_form.new_password1.errors %}
+                        <div class="form-error">{{ password_form.new_password1.errors.0 }}</div>
+                    {% endif %}
+                    <div class="form-help">{{ password_form.new_password1.help_text|safe }}</div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Confirm New Password</label>
+                    {{ password_form.new_password2 }}
+                    {% if password_form.new_password2.errors %}
+                        <div class="form-error">{{ password_form.new_password2.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                <button type="submit" class="button">
+                    <i class="fas fa-key"></i>
+                    Change Password
+                </button>
+            </form>
+        </div>
+
+        <div class="section-divider"></div>
+
+        <div class="settings-section">
+            <h2 class="settings-title">
+                <i class="fas fa-exclamation-triangle"></i>
+                Danger Zone
+            </h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+                Once you delete your account, there is no going back. Please be certain.
+            </p>
+            <button type="button" class="button button-danger" onclick="confirmDeleteAccount()">
+                <i class="fas fa-trash"></i>
+                Delete Account
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDeleteAccount() {
+    if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+        // Add account deletion logic here
+        alert('Please contact support to delete your account.');
+    }
+}
+
+// Style form inputs
+document.querySelectorAll('input[type="text"], input[type="email"], input[type="password"]').forEach(input => {
+    input.classList.add('form-input');
+});
+</script>
+{% endblock %} 

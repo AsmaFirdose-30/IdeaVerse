@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notification Settings{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+    --profile-card-bg: #fff;
+    --profile-shadow: 0 8px 20px rgba(0,0,0,0.10);
+    --profile-radius: 16px;
+    --profile-accent: #6a11cb;
+    --profile-accent-dark: #4a00e0;
+}
+.settings-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    /* fallback for old browsers */
+    /* background: #e0f7fa; */
+}
+.settings-card {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    /* fallback for old browsers */
+    /* background: #e0f7fa; */
+    padding: 2rem;
+    border-radius: var(--profile-radius);
+    box-shadow: var(--profile-shadow);
+}
+.settings-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--profile-accent-dark);
+}
+.settings-description {
+    color: #888;
+    margin-bottom: 2rem;
+}
+.settings-section {
+    margin-bottom: 2rem;
+}
+.section-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--profile-accent-dark);
+}
+.notification-list {
+    display: grid;
+    gap: 1rem;
+}
+.notification-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #f3f4f6;
+    border-radius: 0.75rem;
+    border: 1px solid #eee;
+    transition: box-shadow 0.3s;
+}
+.notification-item:hover {
+    box-shadow: 0 4px 15px var(--profile-shadow);
+}
+.notification-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.notification-title {
+    font-weight: 500;
+    color: #333;
+}
+.notification-description {
+    font-size: 0.875rem;
+    color: #888;
+}
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+}
+.toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #888;
+    transition: .4s;
+    border-radius: 34px;
+}
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+.toggle-input:checked + .toggle-slider {
+    background-color: var(--profile-accent);
+}
+.toggle-input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+}
+.section-divider {
+    height: 1px;
+    background: #eee;
+    margin: 2rem 0;
+}
+@media (max-width: 768px) {
+    .settings-container {
+        padding: 1rem 0.5rem;
+    }
+    .notification-item {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+.button {
+    background: #009688;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,150,136,0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+.button:hover {
+    background: #00796b;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,150,136,0.13);
+}
+.section-title, .settings-title, h1 {
+    color: #009688;
+}
+body, .settings-container, .settings-description, .form-label, .form-input {
+    color: #222;
+}
+.notification-title, .notification-description, .empty-state {
+    color: #6c757d;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="settings-container">
+    <div class="settings-card">
+        <h1 class="settings-title">
+            <i class="fas fa-bell"></i>
+            Notification Settings
+        </h1>
+        <p class="settings-description">
+            Customize how and when you want to receive notifications about your content and activity.
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-envelope"></i>
+                    Email Notifications
+                </h2>
+                <div class="notification-list">
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">New Comments</div>
+                            <div class="notification-description">
+                                Receive notifications when someone comments on your boards
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" name="email_comments"
+                                   {% if preferences.email_comments %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">Likes</div>
+                            <div class="notification-description">
+                                Receive notifications when someone likes your boards
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" name="email_likes"
+                                   {% if preferences.email_likes %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">New Followers</div>
+                            <div class="notification-description">
+                                Receive notifications when someone follows you
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" name="email_followers"
+                                   {% if preferences.email_followers %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-divider"></div>
+
+            <div class="settings-section">
+                <h2 class="section-title">
+                    <i class="fas fa-desktop"></i>
+                    Website Notifications
+                </h2>
+                <div class="notification-list">
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">Activity Updates</div>
+                            <div class="notification-description">
+                                Receive real-time notifications about activity on your content
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" name="web_activity"
+                                   {% if preferences.web_activity %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+
+                    <div class="notification-item">
+                        <div class="notification-info">
+                            <div class="notification-title">Board Updates</div>
+                            <div class="notification-description">
+                                Receive notifications about updates to boards you follow
+                            </div>
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" class="toggle-input" name="web_updates"
+                                   {% if preferences.web_updates %}checked{% endif %}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="button">
+                <i class="fas fa-save"></i>
+                Save Preferences
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+// Add animation to toggles
+document.querySelectorAll('.toggle-input').forEach(toggle => {
+    toggle.addEventListener('change', function() {
+        const slider = this.nextElementSibling;
+        if (this.checked) {
+            slider.style.backgroundColor = getComputedStyle(document.documentElement)
+                .getPropertyValue('--profile-accent');
+        } else {
+            slider.style.backgroundColor = getComputedStyle(document.documentElement)
+                .getPropertyValue('#888');
+        }
+    });
+});
+</script>
+{% endblock %} 

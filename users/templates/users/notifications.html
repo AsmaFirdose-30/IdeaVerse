@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notifications{% endblock %}
+
+{% block extra_head %}
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.container {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    /* fallback for old browsers */
+    /* background: #e0f7fa; */
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+.notifications-list { display: grid; gap: 1.5rem; }
+.notification-card {
+    background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+    /* fallback for old browsers */
+    /* background: #e0f7fa; */
+    border-radius: 1rem;
+    box-shadow: 0 4px 16px rgba(106,17,203,0.08);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+}
+.notification-message { flex: 1; color: #333; font-size: 1.1rem; }
+.notification-time { color: #888; font-size: 0.95rem; margin-left: 1rem; }
+.notification-actions { display: flex; gap: 0.5rem; }
+.button {
+    background: #009688;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s, box-shadow 0.3s, transform 0.2s;
+    box-shadow: 0 2px 8px rgba(0,150,136,0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+.button:hover {
+    background: #00796b;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,150,136,0.13);
+}
+.empty-state { text-align: center; color: #888; padding: 2rem; }
+.section-title, h1 {
+    color: #009688;
+}
+body, .container, .notification-message, .form-label, .form-input {
+    color: #222;
+}
+.notification-time, .empty-state {
+    color: #6c757d;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1 style="font-size:2rem; font-weight:700; color:#4a00e0; margin-bottom:2rem;">
+        <i class="fas fa-bell"></i> Notifications
+    </h1>
+    {% if notifications %}
+    <div class="notifications-list">
+        {% for notif in notifications %}
+        <div class="notification-card">
+            <div class="notification-message">
+                {{ notif.message|safe }}
+                <span class="notification-time">{{ notif.created_at|timesince }} ago</span>
+            </div>
+            {% if notif.notification_type == 'collab_invite' %}
+            <form method="post" class="notification-actions" style="margin:0;">
+                {% csrf_token %}
+                <input type="hidden" name="notif_id" value="{{ notif.id }}">
+                <button type="submit" name="action" value="accept" class="button">Accept</button>
+                <button type="submit" name="action" value="reject" class="button" style="background:#e74c3c;">Reject</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-bell"></i>
+        <h3>No notifications yet.</h3>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
